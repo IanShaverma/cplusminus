@@ -5,13 +5,13 @@
 #include <iostream>
 #include <vector>
 
-int main() {
+void sendVectorAsUDPClient(const std::vector<double>& cpuLoadVector) {
 
   //create socket
   int socket_udp = socket(AF_INET, SOCK_DGRAM, 0);
   if (socket_udp < 0) {
     perror("Socket creation failed");
-    return 1;
+    return;
   }
 
   //add parameters to network server
@@ -22,14 +22,12 @@ int main() {
   server_address.sin_addr.s_addr = inet_addr("127.0.0.1");
 
   //send message (vector)
-  std::vector<int> myVector = {10, 20, 30, 40, 50};
-  size_t data_size = myVector.size() * sizeof(int);
-  sendto(socket_udp, myVector.data(), data_size, 0,
+  size_t data_size = cpuLoadVector.size() * sizeof(double);
+  sendto(socket_udp, cpuLoadVector.data(), data_size, 0,
          (struct sockaddr*)&server_address, sizeof(server_address));
 
   std::cout << "Vector sent." << std::endl;
 
   close(socket_udp);
-
-  return 0;
+  return;
 }

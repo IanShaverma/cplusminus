@@ -6,11 +6,69 @@
 #include <thread>
 #include <vector>
 
+#include "udp_client.h"
+
 struct CoreInfo {
   std::string cpu_name;
   unsigned long user, nice, system, idle, iowait, irq, softirq, steal, guest,
       guest_nice;
 };
+
+std::vector<CoreInfo> readProcStat() {};
+double calculateCoreUsage(const CoreInfo& prev, const CoreInfo& curr) {};
+
+int main() {
+  std::vector<CoreInfo> prev_stats, curr_stats;
+  std::vector<double> cpuLoadVector;
+  prev_stats = readProcStat();
+
+  while (true) {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    curr_stats = readProcStat();
+
+    double total_usage = calculateCoreUsage(prev_stats[0], curr_stats[0]);
+    std::cout << "All CPU usage: " << total_usage << "%" << std::endl;
+    cpuLoadVector.push_back(total_usage);
+
+    /*
+    //for real /proc/stat file
+    for (size_t i = 1; i < curr_stats.size(); ++i) {
+      if (i < prev_stats.size()) {
+        double core_usage = calculateCoreUsage(prev_stats[i], curr_stats[i]);
+        std::cout << "CPU -" << i-1 << "- " << core_usage << "%" << std::endl;
+        cpuLoadVector.push_back(core_usage);
+      }
+    }
+    */
+
+    //begin of emulation
+    //emulation /proc/stat changing
+    std::srand(std::time(0));
+    for (size_t i = 1; i < curr_stats.size(); ++i) {
+      if (i < prev_stats.size()) {
+        //mixing strings
+        int j = std::rand() % 11;
+        double core_usage = calculateCoreUsage(prev_stats[i], curr_stats[j]);
+        //normalization 0..100%
+        if (core_usage > 100) {
+          core_usage = std::rand() % 100;
+        } else if (core_usage < 1 and core_usage > 0) {
+          core_usage = std::rand() % 3;
+        }
+        std::cout << "CPU -" << i - 1 << "- " << core_usage << "%" << std::endl;
+        cpuLoadVector.push_back(core_usage);
+      }
+    }
+    std::cout << std::endl;
+    //end of emulation
+
+    prev_stats = curr_stats;
+    sendVectorAsUDPClient(cpuLoadVector);
+    cpuLoadVector.clear();
+  };
+
+  return 0;
+}
 
 std::vector<CoreInfo> readProcStat() {
   std::vector<CoreInfo> info;
@@ -57,51 +115,4 @@ double calculateCoreUsage(const CoreInfo& prev, const CoreInfo& curr) {
   }
 
   return load;
-}
-
-int main() {
-  std::vector<CoreInfo> prev_stats, curr_stats;
-  prev_stats = readProcStat();
-
-  while (true) {
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    curr_stats = readProcStat();
-
-    double total_usage = calculateCoreUsage(prev_stats[0], curr_stats[0]);
-    std::cout << "All CPU usage: " << total_usage << "%" << std::endl;
-
-    /*
-    //for real /proc/stat file
-    for (size_t i = 1; i < curr_stats.size(); ++i) {
-      if (i < prev_stats.size()) {
-        double core_usage = calculateCoreUsage(prev_stats[i], curr_stats[i]);
-        std::cout << "CPU -" << i-1 << "- " << core_usage << "%" << std::endl;
-      }
-    }
-    */
-
-    //begin of emulation
-    //emulation /proc/stat changing
-    std::srand(std::time(0));
-    for (size_t i = 1; i < curr_stats.size(); ++i) {
-      if (i < prev_stats.size()) {
-        //mixing strings
-        int j = std::rand() % 11;
-        double core_usage = calculateCoreUsage(prev_stats[i], curr_stats[j]);
-        //normalization 0..100%
-        if (core_usage > 100) {
-          core_usage = std::rand() % 100;
-        } else if (core_usage < 1 and core_usage > 0) {
-          core_usage = std::rand() % 3;
-        }
-        std::cout << "CPU -" << i - 1 << "- " << core_usage << "%" << std::endl;
-      }
-    }
-    std::cout << std::endl;
-    //end of emulation
-
-    prev_stats = curr_stats;
-  }
-
-  return 0;
 }

@@ -1,0 +1,1 @@
+void sendVectorAsUDPClient(const std::vector<double>& cpuLoadVector) {}

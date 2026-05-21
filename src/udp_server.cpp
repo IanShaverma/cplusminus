@@ -21,11 +21,11 @@ int main() {
                (struct sockaddr*)&client_address, &address_lenght);
 
   if (received > 0) {
-    int* int_ptr = reinterpret_cast<int*>(buffer);
-    size_t count = received / sizeof(int);
-    std::vector<int> receiivedVectorCPUStats(int_ptr, int_ptr + count);
-    std::cout << "Reveived: ";
-    for (int v : receiivedVectorCPUStats)
+    double* double_ptr = reinterpret_cast<double*>(buffer);
+    size_t count = received / sizeof(double);
+    std::vector<double> receivedCpuLoadVector(double_ptr, double_ptr + count);
+    std::cout << "Received: ";
+    for (double v : receivedCpuLoadVector)
       std::cout << v << " ";
     std::cout << std::endl;
   }
