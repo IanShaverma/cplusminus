@@ -14,8 +14,8 @@ struct CoreInfo {
       guest_nice;
 };
 
-std::vector<CoreInfo> readProcStat() {};
-double calculateCoreUsage(const CoreInfo& prev, const CoreInfo& curr) {};
+std::vector<CoreInfo> readProcStat();
+double calculateCoreUsage(const CoreInfo& prev, const CoreInfo& curr);
 
 int main() {
   std::vector<CoreInfo> prev_stats, curr_stats;
@@ -87,6 +87,7 @@ std::vector<CoreInfo> readProcStat() {
     iss >> ci.user >> ci.nice >> ci.system >> ci.idle >> ci.iowait >> ci.irq >>
         ci.softirq >> ci.steal >> ci.guest >> ci.guest_nice;
     info.push_back(ci);
+    return info;
   }
 
   file.close();

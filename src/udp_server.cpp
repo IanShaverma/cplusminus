@@ -19,16 +19,18 @@ int main() {
   ssize_t received =
       recvfrom(socket_udp, buffer, sizeof(buffer), 0,
                (struct sockaddr*)&client_address, &address_lenght);
+  while (true) {
+    if (received > 0) {
+      double* double_ptr = reinterpret_cast<double*>(buffer);
+      size_t count = received / sizeof(double);
+      std::vector<double> receivedCpuLoadVector(double_ptr, double_ptr + count);
+      std::cout << "Received: ";
+      for (double v : receivedCpuLoadVector)
+        std::cout << v << " ";
+      std::cout << std::endl;
+    }
+  };
 
-  if (received > 0) {
-    double* double_ptr = reinterpret_cast<double*>(buffer);
-    size_t count = received / sizeof(double);
-    std::vector<double> receivedCpuLoadVector(double_ptr, double_ptr + count);
-    std::cout << "Received: ";
-    for (double v : receivedCpuLoadVector)
-      std::cout << v << " ";
-    std::cout << std::endl;
-  }
   close(socket_udp);
   return 0;
 }
