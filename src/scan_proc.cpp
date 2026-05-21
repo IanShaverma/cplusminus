@@ -20,8 +20,8 @@ double calculateCoreUsage(const CoreInfo& prev, const CoreInfo& curr);
 int main() {
   std::vector<CoreInfo> prev_stats, curr_stats;
   std::vector<double> cpuLoadVector;
-  prev_stats = readProcStat();
 
+  prev_stats = readProcStat();
   while (true) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
     curr_stats = readProcStat();
@@ -66,7 +66,6 @@ int main() {
     sendVectorAsUDPClient(cpuLoadVector);
     cpuLoadVector.clear();
   };
-
   return 0;
 }
 
@@ -87,7 +86,6 @@ std::vector<CoreInfo> readProcStat() {
     iss >> ci.user >> ci.nice >> ci.system >> ci.idle >> ci.iowait >> ci.irq >>
         ci.softirq >> ci.steal >> ci.guest >> ci.guest_nice;
     info.push_back(ci);
-    return info;
   }
 
   file.close();
