@@ -23,3 +23,7 @@ g++ ./src/udp_server.cpp -o server
 
 ./server:
   Received: 0 4 0 0 100 100 6 72 26 
+
+  Сборка проекта при помощи cmake:
+    cmake -S . -B build
+    cmake --build build
